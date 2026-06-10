@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIEM + Honeypot Lab Companion (Low-Spec Hardware Edition)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">SH</div>
+        <span class="brand-name">SIEM Lab Host</span>
+      </div>
+
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item active" data-target="panel-dashboard">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Dashboard
+          </li>
+          <li class="nav-item" data-target="panel-ram">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            RAM Triage Simulator
+          </li>
+          <li class="nav-item" data-target="panel-commands">
+            <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+            Command Center
+          </li>
+          <li class="nav-item" data-target="panel-rules">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            IDS Rule Builder
+          </li>
+          <li class="nav-item" data-target="panel-compose">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+            Wazuh Customizer
+          </li>
+          <li class="nav-item" data-target="panel-reporter">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Incident Reporter
+          </li>
+          <li class="nav-item" data-target="panel-guide">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            Lab Guidebook
+          </li>
+        </ul>
+      </nav>
+
+      <!-- HARDWARE INFORMATION FOOTER -->
+      <div class="hardware-pill">
+        <div class="hardware-pill-title">
+          <svg style="width:12px; height:12px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+          Active Host Profile
+        </div>
+        <div class="hardware-pill-spec">CPU: <span>i3-1005G1</span></div>
+        <div class="hardware-pill-spec">Physical RAM: <span>12 GB</span></div>
+        <div class="hardware-pill-spec">VM RAM: <span>4 GB</span></div>
+        <div class="hardware-pill-spec">Active Swap: <span>2 GB</span></div>
+      </div>
+    </aside>
+
+    <!-- MAIN PANELS -->
+    <main class="main-content">
+      
+      <!-- TOP BANNER HEADER -->
+      <header class="header">
+        <div class="header-title">
+          <h1>SIEM + Honeypot Low-Spec Lab</h1>
+          <p>Cybersecurity Engineering Command Station &bull; May 2026</p>
+        </div>
+        <div class="header-meta">
+          <div class="badge warning" id="progress-pill">0/18 Tasks (0%)</div>
+          <div class="badge success">Single VM Lab Mode</div>
+        </div>
+      </header>
+
+      <!-- PANEL 1: DASHBOARD OVERVIEW -->
+      <section class="panel active" id="panel-dashboard">
+        
+        <div class="alert-box warning">
+          <div class="alert-icon">
+            <svg style="stroke: var(--accent-amber); fill: none; stroke-width: 2;" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <div class="alert-content">
+            <h4>Low-Spec Constrained Hardware Triage Active</h4>
+            <p>Your hardware (Intel i3 / 12GB RAM) is optimized using an aggressive single-VM deployment. Do NOT run Suricata and Wazuh simultaneously inside your 4GB VM when active attack simulation runs, otherwise out-of-memory lockups can occur.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          
+          <!-- LEFT COLUMN: TASK TRACKER -->
+          <div class="glass-card">
+            <div class="glass-card-title">
+              <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              Lab Milestones Checklist
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.25rem;">
+              Click tasks as you execute them inside your Kali Linux environment. Your progress is saved dynamically to your local browser storage.
+            </p>
+            <div class="checklist-container" id="checklist-items">
+              <!-- Dynamically populated by JS -->
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: QUICK SUMMARY -->
+          <div>
+            <div class="glass-card">
+              <div class="glass-card-title">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                Lab Architecture
+              </div>
+              <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-secondary);">
+                By restructuring the classic 4-VM setup, we run a dense security perimeter in isolated lightweight layers inside **one** Kali VM.
+              </p>
+              <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem;">
+                <li style="display:flex; justify-content:space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.35rem;">
+                  <span>VM OS:</span> <strong style="color: var(--text-primary);">Kali Linux Light (XFCE)</strong>
+                </li>
+                <li style="display:flex; justify-content:space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.35rem;">
+                  <span>Honeypot:</span> <strong style="color: var(--accent-cyan);">Cowrie (SSH/Telnet Docker)</strong>
+                </li>
+                <li style="display:flex; justify-content:space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.35rem;">
+                  <span>IDS:</span> <strong style="color: var(--accent-amber);">Suricata (Process daemon)</strong>
+                </li>
+                <li style="display:flex; justify-content:space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.35rem;">
+                  <span>SIEM:</span> <strong style="color: var(--accent-green);">Wazuh (Optimized Compose Stack)</strong>
+                </li>
+                <li style="display:flex; justify-content:space-between; padding-bottom: 0.35rem;">
+                  <span>Offensive:</span> <strong style="color: var(--accent-red);">Hydra & Nmap (Local loopback)</strong>
+                </li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <div class="glass-card-title">
+                <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Config File Deployment
+              </div>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                All configurations generated by this app are stored locally inside the project folder:
+              </p>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.75rem; color: var(--accent-cyan); overflow-x: auto; margin-bottom: 1rem;">
+                C:\Users\HP\.gemini\antigravity\scratch\siem-honeypot-companion\lab-configs\
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                To deploy these, open **PowerShell** on your host inside the project folder and run:
+              </p>
+              <div style="font-family: var(--font-mono); font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.5rem; color: #fff; margin-top: 0.5rem;">
+                .\deploy-to-kali.ps1
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      <!-- PANEL 2: RAM TRIAGE SIMULATOR -->
+      <section class="panel" id="panel-ram">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+            Active VM Memory Calculator
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Toggle the virtual services you plan to start inside your Kali Linux guest. The simulator calculates real-time constraints inside your capped 4096 MB allocation and provides live operational recommendations.
+          </p>
+
+          <div class="ram-grid">
+            <!-- TOGGLE CONTROLS -->
+            <div class="ram-toggles">
+              
+              <!-- Baseline Desktop (Always On) -->
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Kali Linux Base OS (XFCE)</span>
+                  <span class="ram-toggle-desc">Host desktop environment & system services.</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">450 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" checked disabled class="ram-toggle-switch" data-ram-key="kali_gui">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Cowrie Honeypot -->
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Cowrie Honeypot (Docker)</span>
+                  <span class="ram-toggle-desc">SSH & Telnet honeypot listening containers.</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">180 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-cowrie" checked class="ram-toggle-switch" data-ram-key="cowrie">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Suricata IDS -->
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Suricata IDS Engine</span>
+                  <span class="ram-toggle-desc">Packet capture daemon (Idle vs Active scan modes).</span>
+                  <div style="margin-top: 0.5rem; display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text-secondary);">
+                    <label style="display:flex; align-items:center; gap:0.25rem; font-weight:normal; text-transform:none;">
+                      <input type="radio" name="suricata-mode" value="idle" checked> Idle (120 MB)
+                    </label>
+                    <label style="display:flex; align-items:center; gap:0.25rem; font-weight:normal; text-transform:none;">
+                      <input type="radio" name="suricata-mode" value="active"> Brute-Force Load (380 MB)
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">Var</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-suricata" class="ram-toggle-switch" data-ram-key="suricata">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Wazuh Indexer -->
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Wazuh Indexer (OpenSearch)</span>
+                  <span class="ram-toggle-desc">Aggressive database engine (Tuned heap).</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">750 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-indexer" class="ram-toggle-switch" data-ram-key="wazuh_indexer">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Wazuh Manager & Dashboard -->
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Wazuh Manager Daemon</span>
+                  <span class="ram-toggle-desc">Alert evaluation pipeline & core rules API.</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">280 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-manager" class="ram-toggle-switch" data-ram-key="wazuh_manager">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Wazuh Dashboard Server</span>
+                  <span class="ram-toggle-desc">Kibana-like graphical dashboard service.</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">320 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-dashboard-svc" class="ram-toggle-switch" data-ram-key="wazuh_dashboard">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Firefox VM Browser -->
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Firefox Browser (VM-internal)</span>
+                  <span class="ram-toggle-desc">Reading dashboard inside the VM virtual layers.</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">450 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" class="ram-toggle-switch" data-ram-key="firefox">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Offensive Tools -->
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Hydra Attack Simulation</span>
+                  <span class="ram-toggle-desc">Multi-threaded password brute-force scan.</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">150 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" class="ram-toggle-switch" data-ram-key="hydra">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="ram-toggle-item">
+                <div class="ram-toggle-info">
+                  <span class="ram-toggle-name">Metasploit Framework</span>
+                  <span class="ram-toggle-desc">Exploitation console testing (`msfconsole`).</span>
+                </div>
+                <div>
+                  <span class="ram-toggle-value">350 MB</span>
+                  <label class="switch">
+                    <input type="checkbox" class="ram-toggle-switch" data-ram-key="metasploit">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- LIVE METRIC OUTPUT -->
+            <div class="ram-triage-output">
+              <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">VM RAM Buffer Stress</h3>
+              
+              <div class="ram-bar-container">
+                <div class="ram-bar-fill" id="ram-bar"></div>
+                <div class="ram-bar-text" id="ram-text">Loading...</div>
+              </div>
+
+              <h3 style="font-size: 1.05rem; margin-top: 1.5rem; margin-bottom: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Dynamic RAM Triage Advice</h3>
+              <div class="triage-advice-container" id="triage-advice">
+                <!-- Dynamically populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL 3: COMMAND CENTER -->
+      <section class="panel" id="panel-commands">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+            Interactive Terminal Command Center
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Copy-paste execution steps directly into your Kali VM terminal shell. Optimized commands avoid provisioning bottlenecks and keep CPU workloads low.
+          </p>
+
+          <!-- Swap Allocator -->
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 1: Allocate Virtual Swapfile Safety Net</span>
+              <button class="code-copy-btn" data-target-id="cmd-swap">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-swap"># Pull and run the swap allocator directly from mapped files:
+sudo chmod +x ~/lab/configs/setup-swap.sh && sudo ~/lab/configs/setup-swap.sh</code></pre>
+          </div>
+
+          <!-- Docker Setup -->
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 1: Install & Configure Docker Environment</span>
+              <button class="code-copy-btn" data-target-id="cmd-docker">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-docker">sudo apt-get update && sudo apt-get install -y docker.io docker-compose
+sudo systemctl start docker && sudo systemctl enable docker
+sudo usermod -aG docker $USER
+# NOTE: Log out and log back in (or run 'newgrp docker') to apply permission change!</code></pre>
+          </div>
+
+          <!-- Deploy Honeypot -->
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 2: Deploy Cowrie Honeypot (Docker)</span>
+              <button class="code-copy-btn" data-target-id="cmd-cowrie">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-cowrie">sudo chmod +x ~/lab/configs/cowrie-docker.sh && ~/lab/configs/cowrie-docker.sh</code></pre>
+          </div>
+
+          <!-- Deploy Suricata -->
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 3: Install & Start Suricata IDS</span>
+              <button class="code-copy-btn" data-target-id="cmd-suricata">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-suricata">sudo apt-get install -y suricata && sudo suricata-update
+# Append local.rules configuration
+sudo cp ~/lab/configs/suricata-rules.local /etc/suricata/rules/local.rules
+# Enable rules in config (edit suricata.yaml to include: - local.rules under rule-files)
+# Start Suricata in Background on eth0:
+sudo suricata -c /etc/suricata/suricata.yaml -i eth0 -D</code></pre>
+          </div>
+
+          <!-- Deploy Wazuh -->
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 4: Spin Up Tuned Wazuh SIEM Single-Node Stack</span>
+              <button class="code-copy-btn" data-target-id="cmd-wazuh">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-wazuh">git clone https://github.com/wazuh/wazuh-docker.git ~/lab/wazuh-docker
+cd ~/lab/wazuh-docker/single-node
+# Overwrite compose with lowspec custom version
+cp ~/lab/configs/wazuh-lowspec-compose.yml ./docker-compose.yml
+# Generate stack TLS certs
+docker compose -f generate-indexer-certs.yml run --rm generator
+# Start services (Wazuh stack boot sequence)
+docker compose up -d</code></pre>
+          </div>
+
+          <!-- Attack Simulation Scenarios -->
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 5: Attack Scenario 1 - SSH Honeypot Brute-Force</span>
+              <button class="code-copy-btn" data-target-id="cmd-att-1">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-att-1"># Decompress rockyou.txt
+sudo gunzip -f /usr/share/wordlists/rockyou.txt.gz
+# Execute brute-force against local honeypot port 2222:
+hydra -l root -P /usr/share/wordlists/rockyou.txt ssh://127.0.0.1 -s 2222 -t 4 -V -l ~/lab/brute_force.log</code></pre>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 5: Attack Scenario 3 - SQL Injection Web Exfiltration</span>
+              <button class="code-copy-btn" data-target-id="cmd-att-3">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-att-3"># Send HTTP request mimicking SQL UNION extraction to trip traversal and SQLi rules:
+curl -i 'http://127.0.0.1/?q=SELECT+*+FROM+users+UNION+SELECT+1,username,password+FROM+accounts;../../../../etc/passwd'</code></pre>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Phase 5: Attack Scenario 4 - Stealth TCP SYN Port Scanning</span>
+              <button class="code-copy-btn" data-target-id="cmd-att-4">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Command
+              </button>
+            </div>
+            <pre><code id="cmd-att-4"># Run aggressive scanning locally to trigger Suricata rules
+sudo nmap -sS -A -T4 -p1-10000 127.0.0.1</code></pre>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- PANEL 4: DYNAMIC SURICATA RULE BUILDER -->
+      <section class="panel" id="panel-rules">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Interactive Suricata IDS Rule Compiler
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Quickly customize rule parameters in the fields below. The interactive compiler parses your inputs in real time, validating formatting structures.
+          </p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="rule-proto">Protocol</label>
+              <select id="rule-proto">
+                <option value="tcp" selected>TCP</option>
+                <option value="udp">UDP</option>
+                <option value="icmp">ICMP</option>
+                <option value="http">HTTP (TCP Web Parsing)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="rule-msg">Message (msg)</label>
+              <input type="text" id="rule-msg" value="SSH Brute Force Attempt on Honeypot">
+            </div>
+
+            <div class="form-group">
+              <label for="rule-src-ip">Source IP</label>
+              <input type="text" id="rule-src-ip" value="any">
+            </div>
+
+            <div class="form-group">
+              <label for="rule-src-port">Source Port</label>
+              <input type="text" id="rule-src-port" value="any">
+            </div>
+
+            <div class="form-group">
+              <label for="rule-dst-ip">Destination IP Address</label>
+              <input type="text" id="rule-dst-ip" value="$HOME_NET">
+            </div>
+
+            <div class="form-group">
+              <label for="rule-dst-port">Destination Port</label>
+              <input type="text" id="rule-dst-port" value="2222">
+            </div>
+
+            <div class="form-group">
+              <label for="rule-sid">Signature ID (SID)</label>
+              <input type="number" id="rule-sid" value="9000001" min="1000000">
+            </div>
+
+            <div class="form-group">
+              <label for="rule-rev">Revision (rev)</label>
+              <input type="number" id="rule-rev" value="1">
+            </div>
+
+            <div class="form-group">
+              <label for="rule-thresh-type">Rate Limit Threshold</label>
+              <select id="rule-thresh-type">
+                <option value="none">Disable Rate Limiting</option>
+                <option value="both" selected>Both (Log first match & limit subsequent)</option>
+                <option value="limit">Limit (Suppress logs after threshold reached)</option>
+                <option value="threshold">Threshold (Log only once per interval)</option>
+              </select>
+            </div>
+
+            <div class="form-grid" style="grid-column: span 1; gap: 1rem; margin-bottom: 0;" id="thresh-fields">
+              <div class="form-group" id="thresh-count-group">
+                <label for="rule-thresh-count">Trigger Count</label>
+                <input type="number" id="rule-thresh-count" value="5" min="1">
+              </div>
+              <div class="form-group">
+                <label for="rule-thresh-sec">Time Window (Seconds)</label>
+                <input type="number" id="rule-thresh-sec" value="60" min="1">
+              </div>
+            </div>
+
+            <!-- PRESETS -->
+            <div class="form-group full-width" style="margin-top: 1rem;">
+              <label>Quick Rule Presets</label>
+              <div style="display:flex; gap:0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                <button class="btn btn-secondary preset-btn" data-preset="sqli">SQL Injection</button>
+                <button class="btn btn-secondary preset-btn" data-preset="revshell">Reverse Shell Spawn</button>
+                <button class="btn btn-secondary preset-btn" data-preset="traverse">Directory Traversal</button>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-container" style="margin-top: 2rem;">
+            <div class="code-header">
+              <span class="code-title">Compiled Suricata Signature Output</span>
+              <button class="code-copy-btn" data-target-id="rule-output">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Rule
+              </button>
+            </div>
+            <pre><code id="rule-output">alert tcp any any -> $HOME_NET 2222 (msg:"SSH Brute Force Attempt on Honeypot"; flow:to_server; flags:S; threshold:type both, track by_src, count 5, seconds 60; classtype:attempted-admin; sid:9000001; rev:1;)</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL 5: WAZUH DOCKER-COMPOSE EXPORTER -->
+      <section class="panel" id="panel-compose">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+            Tuned Wazuh Composer Stack Exporter
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Adjust memory parameters and default administration credentials below to generate a low-resource YAML compose stack customized for single VM limits.
+          </p>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="comp-heap">OpenSearch Indexer Heap Limit</label>
+              <select id="comp-heap">
+                <option value="256m">256 MB (Ultra-Lightweight / Minimal log ingestion)</option>
+                <option value="512m" selected>512 MB (Recommended for i3 - Stable with Swap)</option>
+                <option value="768m">768 MB (Good indexing speeds / Decent VM cushion)</option>
+                <option value="1024m">1024 MB (Max VM allocation limit; OOM warning)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="comp-pass">Wazuh Admin Password</label>
+              <input type="text" id="comp-pass" value="SecretPassword123!">
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-bottom: 1.5rem;">
+            <button class="btn" id="download-compose-btn">
+              <svg style="width:16px; height:16px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Download docker-compose.yml
+            </button>
+          </div>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-title">Dynamic Compose Template Snippet</span>
+              <button class="code-copy-btn" data-target-id="compose-output">
+                <svg style="width:14px; height:14px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Content
+              </button>
+            </div>
+            <pre style="height: 350px; overflow-y: scroll;"><code id="compose-output">Loading custom yml...</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL 6: INCIDENT REPORTER -->
+      <section class="panel" id="panel-reporter">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Interactive Cyber Incident Report Builder
+          </div>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            Assemble professional incident reports for your portfolio. Choose a simulated attack scenario, edit the pre-populated values, and download the finished report as standard Markdown (`.md`) to showcase on your GitHub repository.
+          </p>
+
+          <div class="reporter-container">
+            <!-- INPUT FIELDS -->
+            <div>
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label for="rep-scen">Threat Scenario Type</label>
+                  <select id="rep-scen">
+                    <option value="ssh" selected>Scenario 1: SSH Brute Force Attempt</option>
+                    <option value="post">Scenario 2: Post-Exploitation Terminal Actions</option>
+                    <option value="traverse">Scenario 3: HTTP Directory Traversal & Web Shell Injection</option>
+                    <option value="nmap">Scenario 4: Stealth Reconnaissance Nmap Scan</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="rep-attacker">Attacker IP Address</label>
+                  <input type="text" id="rep-attacker" value="192.168.0.45">
+                </div>
+
+                <div class="form-group">
+                  <label for="rep-target">Target IP / Host Asset</label>
+                  <input type="text" id="rep-target" value="127.0.0.1 (Kali Honeypot)">
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="rep-time">Incident Timestamp</label>
+                  <input type="text" id="rep-time" value="2026-05-26 18:45:10">
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="rep-evidence">Log Evidence (IoC / Payload Snippets)</label>
+                  <textarea id="rep-evidence" placeholder="Enter system log lines or indicators of compromise..."></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                  <label for="rep-mitigations">Mitigation Roadmap & Recommendations</label>
+                  <textarea id="rep-mitigations" placeholder="Enter defensive recommendations..."></textarea>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="btn btn-success" id="download-report-btn">
+                  <svg style="width:16px; height:16px; stroke: currentColor; fill:none; stroke-width: 2.5;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Download Report (.md)
+                </button>
+              </div>
+            </div>
+
+            <!-- LIVE MARKDOWN PREVIEW -->
+            <div>
+              <h3 style="font-size: 1.05rem; margin-bottom: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px;">Live Markdown Preview</h3>
+              <div class="markdown-preview" id="report-preview">
+                <!-- Dynamically populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANEL 7: LAB GUIDEBOOK -->
+      <section class="panel" id="panel-guide">
+        <div class="glass-card">
+          <div class="glass-card-title">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            Interactive Lab Guidebook
+          </div>
+          
+          <nav class="guide-nav">
+            <button class="guide-nav-item active" data-guide-target="guide-intro">Strategy & Architecture</button>
+            <button class="guide-nav-item" data-guide-target="guide-vbox">VirtualBox Tweaks</button>
+            <button class="guide-nav-item" data-guide-target="guide-sharing">File Sharing Mounts</button>
+            <button class="guide-nav-item" data-guide-target="guide-trouble">Troubleshooting</button>
+          </nav>
+
+          <!-- Guide Section: Intro -->
+          <div class="guide-section active" id="guide-intro">
+            <h3>One VM, Full Security Lab Concept</h3>
+            <p>
+              Traditional cybersecurity home labs assume infinite resource overhead. Recommending four parallel virtual servers (e.g., Attacker, Firewall, Honeypot, SIEM Node) on a low-spec CPU with 12 GB Host RAM guarantees severe host memory thrashing and heat throttling.
+            </p>
+            <p>
+              <strong>The Architecture:</strong> Instead of scaling <em>horizontally</em> via hypervisor overhead, this lab scales <em>vertically</em>. A single 4 GB RAM Kali Linux VM is provisioned to play all roles. 
+            </p>
+            <ul style="margin-top: 1rem;">
+              <li><strong>Network Loopback (127.0.0.1)</strong> bridges the attack console and security sensor array. Since attacks target localhost, no physical hypervisor SPAN network configuration is required.</li>
+              <li><strong>Docker Container Daemonization</strong> isolates network listening environments. Cowrie handles fake interactive terminal layers within 180 MB memory limits.</li>
+              <li><strong>JVM Heap Compaction</strong> restricts Wazuh's default 2-4 GB memory footprints. Standard OpenSearch limits are scaled down to 512 MB, enabling a professional SIEM stack to run alongside IDS systems.</li>
+            </ul>
+          </div>
+
+          <!-- Guide Section: VirtualBox -->
+          <div class="guide-section" id="guide-vbox">
+            <h3>Hypervisor Tuning for Constrained Hosts</h3>
+            <p>
+              Configure VirtualBox settings precisely to allow standard operations inside the Kali Linux VM while keeping Windows 11 responsive.
+            </p>
+            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; text-align: left;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--glass-border); color: var(--accent-cyan);">
+                  <th style="padding: 0.5rem 1rem;">VirtualBox Setting</th>
+                  <th style="padding: 0.5rem 1rem;">Optimized Value</th>
+                  <th style="padding: 0.5rem 1rem;">Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 0.5rem 1rem; font-weight: 600;">System RAM</td>
+                  <td style="padding: 0.5rem 1rem; font-family: var(--font-mono); color: var(--accent-amber);">4096 MB (4 GB)</td>
+                  <td style="padding: 0.5rem 1rem; color: var(--text-secondary);">Exact sweet spot leaving 8 GB for Windows base stability.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 0.5rem 1rem; font-weight: 600;">CPU Cores</td>
+                  <td style="padding: 0.5rem 1rem; font-family: var(--font-mono); color: var(--accent-amber);">2 Cores</td>
+                  <td style="padding: 0.5rem 1rem; color: var(--text-secondary);">Prevents core starvation on the dual-core i3 host.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 0.5rem 1rem; font-weight: 600;">Video RAM</td>
+                  <td style="padding: 0.5rem 1rem; font-family: var(--font-mono); color: var(--accent-amber);">64 MB</td>
+                  <td style="padding: 0.5rem 1rem; color: var(--text-secondary);">Enables full screen XFCE rendering with no graphics-card lag.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 0.5rem 1rem; font-weight: 600;">3D Acceleration</td>
+                  <td style="padding: 0.5rem 1rem; font-family: var(--font-mono); color: var(--accent-amber);">Disabled (OFF)</td>
+                  <td style="padding: 0.5rem 1rem; color: var(--text-secondary);">Avoids graphic adapter memory leaks.</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                  <td style="padding: 0.5rem 1rem; font-weight: 600;">Paravirtualization</td>
+                  <td style="padding: 0.5rem 1rem; font-family: var(--font-mono); color: var(--accent-amber);">KVM</td>
+                  <td style="padding: 0.5rem 1rem; color: var(--text-secondary);">Best execution speed for Linux guests on Intel architectures.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Guide Section: Shared Folders -->
+          <div class="guide-section" id="guide-sharing">
+            <h3>Deploying Mapped Configs into Kali</h3>
+            <p>
+              To push the low-resource scripts and rule templates generated here into the guest VM, choose one of these two transfer avenues:
+            </p>
+
+            <h3>Avenue 1: Automated SCP Transfer (Recommended)</h3>
+            <p>
+              1. Inside Kali VM, ensure the SSH server is running:
+            </p>
+            <div style="font-family: var(--font-mono); font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.75rem; color: #fff; margin-bottom: 1rem;">
+              sudo systemctl start ssh && sudo systemctl enable ssh
+            </div>
+            <p>
+              2. Open <strong>PowerShell</strong> on your Windows host inside this project directory and run the deployment automation:
+            </p>
+            <div style="font-family: var(--font-mono); font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.75rem; color: #fff; margin-bottom: 1rem;">
+              .\deploy-to-kali.ps1
+            </div>
+
+            <h3>Avenue 2: Shared Folder Mount Configuration</h3>
+            <p>
+              1. In VirtualBox, go to **Kali VM Settings &rarr; Shared Folders &rarr; Add Shared Folder**.
+            </p>
+            <p>
+              2. Configure the directory fields:
+            </p>
+            <ul>
+              <li><strong>Folder Path:</strong> `C:\Users\HP\.gemini\antigravity\scratch\siem-honeypot-companion\lab-configs`</li>
+              <li><strong>Folder Name:</strong> `lab_configs`</li>
+              <li><strong>Mount Point:</strong> `/media/sf_lab_configs`</li>
+              <li><strong>Check Options:</strong> Auto-mount (ON) & Make Permanent (ON).</li>
+            </ul>
+            <p>
+              3. Mount the directories inside your Kali Terminal session:
+            </p>
+            <div style="font-family: var(--font-mono); font-size: 0.8rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 8px; padding: 0.75rem; color: #fff; margin-bottom: 1rem;">
+              # Add user to VirtualBox group for folder read-write access:<br>
+              sudo usermod -aG vboxsf $USER<br>
+              # Mount file layers:<br>
+              mkdir -p ~/lab/configs<br>
+              cp -r /media/sf_lab_configs/* ~/lab/configs/<br>
+              chmod +x ~/lab/configs/*.sh
+            </div>
+          </div>
+
+          <!-- Guide Section: Troubleshooting -->
+          <div class="guide-section" id="guide-trouble">
+            <h3>Low-Spec Lab Defense Checklist</h3>
+            <p><strong>Symptom: Kali Desktop freezes or stops responding.</strong></p>
+            <ul>
+              <li><strong>Cause:</strong> Memory exhaustion triggering OS pagination lockups.</li>
+              <li><strong>Triage:</strong> Open a terminal session on your Windows Host and run SSH into the VM: `ssh kali@<vm-ip>`. Immediately execute `docker stop $(docker ps -a -q)` and `sudo pkill suricata` to release host memory. Wait 30 seconds for the garbage collector to clear memory lines.</li>
+            </ul>
+
+            <p><strong>Symptom: Wazuh Indexer fails to boot with status 'exit 137'.</strong></p>
+            <ul>
+              <li><strong>Cause:</strong> Linux OOM killer terminated the JVM container due to RAM resource starvation.</li>
+              <li><strong>Triage:</strong> Verify that the 2 GB Swapfile was mounted successfully (`swapon --show`). If inactive, execute the swap configuration script: `sudo ~/lab/configs/setup-swap.sh`.</li>
+            </ul>
+
+            <p><strong>Symptom: Suricata alerts fail to trigger during port scans.</strong></p>
+            <ul>
+              <li><strong>Cause:</strong> Inbound interface matching rules failed to resolve eth0 interface.</li>
+              <li><strong>Triage:</strong> Find the active network interface on your VM: `ip addr show`. Verify that the interface name matches the interface mapped in `/etc/suricata/suricata.yaml` inside the `af-packet` block.</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

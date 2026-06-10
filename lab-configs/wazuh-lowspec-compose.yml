@@ -1,0 +1,105 @@
+# -----------------------------------------------------------------------------
+# File: wazuh-lowspec-compose.yml
+# Purpose: Single-Node Wazuh SIEM stack tailored for low-resource environments.
+#          Drastically scales down memory limits and disables aggressive caches
+#          to run stably within a 4 GB RAM Kali Linux VM.
+# Target: Transfer to ~/lab/wazuh-docker/single-node/docker-compose.yml
+#         (Overwrite the default compose file).
+# -----------------------------------------------------------------------------
+
+version: '3.8'
+
+services:
+  wazuh-indexer:
+    image: wazuh/wazuh-indexer:4.8.0
+    container_name: wazuh.indexer
+    hostname: wazuh-indexer
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      # --- CRITICAL LOW-SPEC OVERRIDES ---
+      # 1. Scale down Java Heap limits (Default is 2g/2g, which crashes a 4GB VM instantly)
+      - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m
+      # 2. Disable memory lock so indexer doesn't fail to boot if Kali denies unlimited locking
+      - bootstrap.memory_lock=false
+      # ----------------------------------
+      - discovery.type=single-node
+      - cluster.name=wazuh-cluster
+      - node.name=wazuh-indexer
+      - PATH_CONF=/usr/share/wazuh-indexer/config
+      # Default testing credentials (User can change)
+      - INDEXER_PASSWORD=SecretPassword123!
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - wazuh-indexer-data:/var/lib/wazuh-indexer
+      - ./config/wazuh_indexer/wazuh-indexer.yml:/usr/share/wazuh-indexer/config/wazuh-indexer.yml
+      - ./config/wazuh_indexer_ssl_certs:/usr/share/wazuh-indexer/certs
+    networks:
+      - wazuh-net
+
+  wazuh-manager:
+    image: wazuh/wazuh-manager:4.8.0
+    container_name: wazuh.manager
+    hostname: wazuh-manager
+    restart: unless-stopped
+    ports:
+      - "1514:1514"
+      - "1515:1515"
+      - "55000:55000"
+    environment:
+      - INDEXER_URL=https://wazuh.indexer:9200
+      - INDEXER_USER=admin
+      - INDEXER_PASSWORD=SecretPassword123!
+      - FILEBEAT_SSL_VERIFICATION_MODE=full
+      - SSL_CERTIFICATE_AUTHORITIES=/etc/ssl/root-ca.pem
+      - SSL_CERTIFICATE=/etc/ssl/filebeat.pem
+      - SSL_KEY=/etc/ssl/filebeat.key
+    volumes:
+      - wazuh-manager-data:/var/ossec/data
+      - ./config/wazuh_indexer_ssl_certs/root-ca-manager.pem:/etc/ssl/root-ca.pem
+      - ./config/wazuh_indexer_ssl_certs/wazuh.manager.pem:/etc/ssl/filebeat.pem
+      - ./config/wazuh_indexer_ssl_certs/wazuh.manager-key.pem:/etc/ssl/filebeat.key
+    networks:
+      - wazuh-net
+
+  wazuh-dashboard:
+    image: wazuh/wazuh-dashboard:4.8.0
+    container_name: wazuh.dashboard
+    hostname: wazuh-dashboard
+    restart: unless-stopped
+    ports:
+      # Map to port 443 inside VM (use https://localhost)
+      - "443:5601"
+    environment:
+      - INDEXER_URL=https://wazuh.indexer:9200
+      - INDEXER_USER=admin
+      - INDEXER_PASSWORD=SecretPassword123!
+      - WAZUH_MANAGER_URL=https://wazuh-manager:55000
+      - DASHBOARD_USERNAME=admin
+      - DASHBOARD_PASSWORD=SecretPassword123!
+      - API_USERNAME=admin
+      - API_PASSWORD=SecretPassword123!
+    volumes:
+      - wazuh-dashboard-data:/usr/share/wazuh-dashboard/data
+      - ./config/wazuh_indexer_ssl_certs/wazuh.dashboard.pem:/usr/share/wazuh-dashboard/certs/wazuh-dashboard.pem
+      - ./config/wazuh_indexer_ssl_certs/wazuh.dashboard-key.pem:/usr/share/wazuh-dashboard/certs/wazuh-dashboard-key.pem
+      - ./config/wazuh_indexer_ssl_certs/root-ca.pem:/usr/share/wazuh-dashboard/certs/root-ca.pem
+      - ./config/wazuh_dashboard/wazuh.yml:/usr/share/wazuh-dashboard/config/wazuh.yml
+    networks:
+      - wazuh-net
+
+volumes:
+  wazuh-indexer-data:
+  wazuh-manager-data:
+  wazuh-dashboard-data:
+
+networks:
+  wazuh-net:
+    driver: bridge

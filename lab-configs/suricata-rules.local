@@ -1,0 +1,42 @@
+# -----------------------------------------------------------------------------
+# File: suricata-rules.local
+# Purpose: Custom Suricata IDS Rules for the Cybersecurity Integration Lab.
+#          Combines core honeypot detection with expanded threat rules for
+#          rich SIEM dashboards.
+# Target: Append to or include in /etc/suricata/rules/local.rules in Kali VM.
+# -----------------------------------------------------------------------------
+
+# =============================================================================
+# SECTION 1: CORE HONEYPOT DETECTION RULES
+# =============================================================================
+
+# 1. SSH Brute Force Attempt on Honeypot (Port 2222)
+# Alerts when a single IP triggers 5 connections within 60 seconds
+alert tcp any any -> $HOME_NET 2222 (msg:"SSH Brute Force Attempt on Honeypot"; flow:to_server; flags:S; threshold:type both, track by_src, count 5, seconds 60; classtype:attempted-admin; sid:9000001; rev:1;)
+
+# 2. Telnet Connection to Honeypot (Port 2323)
+# Immediate violation alert for any connection attempt on Telnet
+alert tcp any any -> $HOME_NET 2323 (msg:"Telnet Connection to Honeypot"; flow:to_server; flags:S; classtype:policy-violation; sid:9000002; rev:1;)
+
+
+# =============================================================================
+# SECTION 2: EXPANDED SCENARIO RULES (4 ADDITIONAL OFFENSIVE PATTERNS)
+# =============================================================================
+
+# 3. FTP Probing / Reconnaissance
+# Detects connections to standard FTP port indicating scanning/recon
+alert tcp any any -> $HOME_NET 21 (msg:"FTP Connection Probing Attempt"; flow:to_server; flags:S; classtype:attempted-recon; sid:9000003; rev:1;)
+
+# 4. HTTP Directory Traversal (LFI/RFI Recon)
+# Inspects HTTP URIs for relative path traversal character sequences '../'
+alert http any any -> $HOME_NET any (msg:"HTTP Directory Traversal Attempt Detected"; flow:to_server; content:"../"; http_uri; fast_pattern; classtype:web-application-attack; sid:9000004; rev:1;)
+
+# 5. Reverse Shell Execution Payload Pattern
+# Detects command injection commands commonly used to spawn shell subprocesses
+alert tcp any any -> $HOME_NET any (msg:"Possible Reverse Shell Spawn Payload Detected"; flow:to_server,established; content:"/bin/bash"; fast_pattern; classtype:attempted-admin; sid:9000005; rev:1;)
+alert tcp any any -> $HOME_NET any (msg:"Possible Reverse Shell Python Spawn Detected"; flow:to_server,established; content:"python -c import pty"; classtype:attempted-admin; sid:9000006; rev:1;)
+
+# 6. Web Shell Interactive Command Parameters
+# Triggers on incoming HTTP requests executing shell commands via typical query strings
+alert http any any -> $HOME_NET any (msg:"Potential Web Shell Command execution (cmd=)"; flow:to_server; content:"cmd="; http_uri; fast_pattern; classtype:web-application-attack; sid:9000007; rev:1;)
+alert http any any -> $HOME_NET any (msg:"Potential Web Shell PHP Eval Ingestion"; flow:to_server; content:"eval(base64_decode"; http_client_body; fast_pattern; classtype:web-application-attack; sid:9000008; rev:1;)
