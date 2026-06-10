@@ -11,7 +11,7 @@ The lab is split between a Windows 11 host and a Kali Linux Guest VM to maximize
 ```mermaid
 graph TD
     subgraph WinHost [Windows 11 Machine - Victim]
-        WinAgent[Wazuh Agent 001 - DarshaksPC<br>Monitors Windows Event Logs]
+        WinAgent[Wazuh Agent 001 - Users-PC<br>Monitors Windows Event Logs]
     end
 
     subgraph KaliVM [Kali Linux VM - Attacker and Host]
@@ -63,7 +63,7 @@ A fully functional Security Information and Event Management (SIEM) lab built fr
 | ID | Name | OS | Role |
 | :--- | :--- | :--- | :--- |
 | **000** | wazuh-manager | Amazon Linux (container) | Central SIEM Manager |
-| **001** | DarshaksPC | Microsoft Windows 11 Pro | Monitored endpoint (Victim machine) |
+| **001** | Users-PC | Microsoft Windows 11 Pro | Monitored endpoint (Victim machine) |
 | **002** | kali | Kali GNU/Linux 2025.4 | Attacker machine (Attack origin) |
 
 ### Why two agents matter:
