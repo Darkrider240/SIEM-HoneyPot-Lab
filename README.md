@@ -10,19 +10,19 @@ The lab is split between a Windows 11 host and a Kali Linux Guest VM to maximize
 
 ```mermaid
 graph TD
-    subgraph WinHost [Windows 11 Machine (Victim)]
-        WinAgent[Wazuh Agent 001<br>DarshaksPC<br>Monitors Windows Event Logs]
+    subgraph WinHost [Windows 11 Machine - Victim]
+        WinAgent[Wazuh Agent 001 - DarshaksPC<br>Monitors Windows Event Logs]
     end
 
-    subgraph KaliVM [Kali Linux VM (Attacker / Host)]
+    subgraph KaliVM [Kali Linux VM - Attacker and Host]
         subgraph DockerStack [Docker Containers]
-            WazuhIndexer[wazuh.indexer<br>Port 9200]
-            WazuhManager[wazuh.manager<br>Ports 1514, 1515, 55000]
-            WazuhDashboard[wazuh.dashboard<br>Port 443]
-            Cowrie[Cowrie Honeypot<br>Port 2222 / 2323]
+            WazuhIndexer[wazuh.indexer - Port 9200]
+            WazuhManager[wazuh.manager - Ports 1514 1515 55000]
+            WazuhDashboard[wazuh.dashboard - Port 443]
+            Cowrie[Cowrie Honeypot - Port 2222 and 2323]
         end
 
-        KaliAgent[Wazuh Agent 002<br>kali<br>Monitors Attacker Actions & Sudo]
+        KaliAgent[Wazuh Agent 002 - kali<br>Monitors Attacker Actions and Sudo]
         Suricata[Suricata IDS<br>Monitors Network Interface]
 
         Cowrie -->|cowrie.json| KaliAgent
@@ -31,7 +31,7 @@ graph TD
 
     WinAgent -->|Port 1514 - Logs| WazuhManager
     KaliAgent -->|Port 1514 - Logs| WazuhManager
-    WazuhManager -->|Filebeat (SSL)| WazuhIndexer
+    WazuhManager -->|Filebeat SSL| WazuhIndexer
     WazuhDashboard -->|HTTPS API| WazuhManager
     WazuhDashboard -->|Search Queries| WazuhIndexer
 ```
